@@ -22,6 +22,8 @@ let s:system_map = {
       \ 'virtual_text': {'start': 'iced#component#virtual_text#start',
       \                  'vim_requires': ['popup', 'ex_cmd'],
       \                  'nvim_requires': ['timer']},
+      \ 'find':         {'start': 'iced#component#find#start',
+      \                  'requires': ['job']},
       \ }
 
 function! s:requires(name) abort
