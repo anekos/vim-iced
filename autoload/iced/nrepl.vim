@@ -212,6 +212,7 @@ function! s:dispatcher(ch, resp) abort
   let original_resp_type = type(original_resp)
 
   let need_debug_input_response = ''
+  let sideloader_lookup_response = ''
 
   for resp in responses
     if type(resp) != v:t_dict
@@ -235,6 +236,8 @@ function! s:dispatcher(ch, resp) abort
     for status in get(resp, 'status', [''])
       if status ==# 'need-debug-input'
         let need_debug_input_response = resp
+      elseif status ==# 'sideloader-lookup'
+        let sideloader_lookup_response = resp
       endif
     endfor
   endfor
@@ -272,6 +275,8 @@ function! s:dispatcher(ch, resp) abort
       call iced#buffer#stdout#open()
     endif
     call iced#nrepl#debug#start(need_debug_input_response)
+  elseif !empty(sideloader_lookup_response)
+    call iced#nrepl#sideloader#lookup(sideloader_lookup_response)
   endif
 endfunction
 " }}}
