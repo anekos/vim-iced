@@ -18,7 +18,7 @@ function! iced#format#all() abort
   call s:set_indentation_rule()
 
   let view = winsaveview()
-  let reg_save = @@
+  let reg_save = @t
   let ns_name = iced#nrepl#ns#name()
   let sign = iced#system#get('sign')
   let before_signs = copy(sign.list_in_buffer())
@@ -29,13 +29,13 @@ function! iced#format#all() abort
 
     let resp = iced#nrepl#op#iced#sync#format_code(codes, iced#nrepl#ns#alias_dict(ns_name))
     if has_key(resp, 'formatted') && !empty(resp['formatted'])
-      %del
+      %del t
       call setline(1, split(resp['formatted'], '\r\?\n'))
     elseif has_key(resp, 'error')
       call iced#message#error_str(resp['error'])
     endif
   finally
-    let @@ = reg_save
+    let @t = reg_save
     call winrestview(view)
     call sign.refresh({'signs': before_signs})
   endtry
@@ -50,7 +50,7 @@ function! iced#format#form() abort
   call s:set_indentation_rule()
 
   let view = winsaveview()
-  let reg_save = @@
+  let reg_save = @t
   let ns_name = iced#nrepl#ns#name()
   let sign = iced#system#get('sign')
   let before_signs = copy(sign.list_in_buffer())
@@ -63,14 +63,14 @@ function! iced#format#form() abort
     else
       let resp = iced#nrepl#op#iced#sync#format_code(code, iced#nrepl#ns#alias_dict(ns_name))
       if has_key(resp, 'formatted') && !empty(resp['formatted'])
-        let @@ = resp['formatted']
-        silent normal! gvp
+        let @t = resp['formatted']
+        silent normal! gv"tp
       elseif has_key(resp, 'error')
         call iced#message#error_str(resp['error'])
       endif
     endif
   finally
-    let @@ = reg_save
+    let @t = reg_save
     call winrestview(view)
     call sign.refresh({'signs': before_signs})
   endtry
@@ -85,7 +85,7 @@ function! iced#format#minimal() abort
   call s:set_indentation_rule()
 
   let view = winsaveview()
-  let reg_save = @@
+  let reg_save = @t
   let ns_name = iced#nrepl#ns#name()
   try
     " NOTE: vim-sexp's slurp move cursor to tail of form
@@ -94,20 +94,20 @@ function! iced#format#minimal() abort
 
     let char = getline('.')[ncol]
     if char ==# '['
-      silent normal! va[y
+      silent normal! va["ty
     elseif char ==# '{'
-      silent normal! va{y
+      silent normal! va{"ty
     else
-      silent normal! va(y
+      silent normal! va("ty
     endif
-    let code = @@
+    let code = @t
     let resp = iced#nrepl#op#iced#sync#format_code(code, iced#nrepl#ns#alias_dict(ns_name))
     if has_key(resp, 'formatted') && !empty(resp['formatted'])
-      let @@ = iced#util#add_indent(ncol, resp['formatted'])
-      silent normal! gvp
+      let @t = iced#util#add_indent(ncol, resp['formatted'])
+      silent normal! gv"tp
     endif
   finally
-    let @@ = reg_save
+    let @t = reg_save
     call winrestview(view)
   endtry
 endfunction

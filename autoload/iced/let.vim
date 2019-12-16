@@ -32,7 +32,7 @@ endfunction
 
 function! iced#let#move_to_let(...) abort
   let view = winsaveview()
-  let reg_save = @@
+  let reg_save = @t
 
   try
     let form = iced#paredit#get_outer_list_raw()
@@ -51,28 +51,28 @@ function! iced#let#move_to_let(...) abort
     if iced#let#jump_to_let() == 0
       " 6 means `len('(let [')`
       let form = iced#util#add_indent(len(name)+1+6, form)
-      let @@ = iced#util#add_indent(
+      let @t = iced#util#add_indent(
             \ indent, printf("(let [%s %s]\n  %s)", name, form, name))
-      silent normal! gvp
+      silent normal! gv"tp
     else
       let pos = getcurpos()
-      let @@ = name
-      silent normal! gvp
+      let @t = name
+      silent normal! gv"tp
       call setpos('.', pos)
 
-      silent normal! vi[y
-      let bindings = @@
+      silent normal! vi["ty
+      let bindings = @t
       let indent = col('.')-1
 
       let form = iced#util#add_indent(len(name)+1, form)
-      let @@ = iced#util#add_indent(
+      let @t = iced#util#add_indent(
             \ indent, printf("%s\n%s %s", bindings, name, form))
-      silent normal! gvp
+      silent normal! gv"tp
     endif
 
     let view['lnum'] = view['lnum'] + len(split(form, '\r\?\n'))
   finally
-    let @@ = reg_save
+    let @t = reg_save
     call winrestview(view)
   endtry
 endfunction

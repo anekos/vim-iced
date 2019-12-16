@@ -243,15 +243,15 @@ function! iced#nrepl#document#current_form() abort
   let view = winsaveview()
   let code = ''
   let code_lnum = 0
-  let reg_save = @@
+  let reg_save = @t
   try
-    let @@ = ''
-    silent normal! vi(y
+    let @t = ''
+    silent normal! vi("ty
     let code_lnum = line('.')
-    let code = trim(@@)
+    let code = trim(@t)
   finally
     silent exe "normal! \<Esc>"
-    let @@ = reg_save
+    let @t = reg_save
     call winrestview(view)
   endtry
 

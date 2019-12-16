@@ -49,7 +49,7 @@ endfunction
 " c.f. https://github.com/alexander-yakushev/compliment/wiki/Context
 function! s:context() abort
   let view = winsaveview()
-  let reg_save = @@
+  let reg_save = @t
 
   try
     " vim-sexp: move to top
@@ -58,15 +58,15 @@ function! s:context() abort
     let nrow = view['lnum'] - line('.')
     let ncol = view['col'] + 1
 
-    silent exe 'normal! va(y'
-    let codes = split(@@, '\r\?\n')
+    silent exe 'normal! va("ty'
+    let codes = split(@t, '\r\?\n')
     let codes[nrow] = printf('%s__prefix__%s', codes[nrow][0:ncol-2], codes[nrow][ncol-1:])
     return join(codes, "\n")
   catch /E684:/
     " index out of range
     return ''
   finally
-    let @@ = reg_save
+    let @t = reg_save
     call winrestview(view)
   endtry
 endfunction
